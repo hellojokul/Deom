@@ -1,0 +1,14 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.course.dao.AccountDao">
+	<insert id="addRecord" useGeneratedKeys="true">
+		insert into trx(contentId,personId,price,time) values
+		<foreach item="account" collection="accountList" separator=",">
+			(#{account.contentId},
+			#{account.personId},
+			#{account.price,typeHandler=com.netease.course.util.StringTypeHandler},
+			#{account.time})
+		</foreach>
+	</insert>
+</mapper>

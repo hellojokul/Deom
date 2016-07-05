@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring" 
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://mybatis.org/schema/mybatis-spring
+    http://mybatis.org/schema/mybatis-spring.xsd">
+
+	<mybatis:scan base-package="com.netease.course.dao"/>
+	
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource" />
+    	<property name="mapperLocations" value="classpath:*Dao.xml" />
+    </bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+
+		<property name="initialSize">
+			<value type="int">${dbcp.initialSize}</value>
+		</property>
+		<property name="maxIdle">
+			<value type="int">${dbcp.maxIdle}</value>
+		</property>
+		<property name="minIdle">
+			<value type="int">${dbcp.minIdle}</value>
+		</property>
+		<property name="maxOpenPreparedStatements">
+			<value type="int">${dbcp.maxOpenPreparedStatements}</value>
+		</property>
+		<property name="maxWait">
+			<value type="int">${dbcp.maxWait}</value>
+		</property>
+		<property name="testWhileIdle">
+			<value type="boolean">${dbcp.testWhileIdle}</value>
+		</property>
+		<property name="minEvictableIdleTimeMillis">
+			<value type="long">${dbcp.minEvictableIdleTimeMillis}</value>
+		</property>
+	</bean>
+</beans>

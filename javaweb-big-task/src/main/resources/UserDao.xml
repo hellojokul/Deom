@@ -1,0 +1,12 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.netease.course.dao.UserDao">
+	<select id="getUser" resultType="com.netease.course.meta.User">
+		select id,userName,password,nickName,userType from person where userName=#{0} and password=#{1} 
+	</select>
+	
+	<select id="getUserByType" resultType="com.netease.course.meta.User">
+		select id,userName,nickName,userType from person where nickName=#{0}
+	</select>
+</mapper>
