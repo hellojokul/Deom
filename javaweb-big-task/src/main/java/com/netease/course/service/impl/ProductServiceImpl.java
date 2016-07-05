@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
 			out.flush();
 			out.write(bytes);
 		} catch (IOException e) {
-			return null;
+			//
 		} finally {
 			try {
 				if(out!=null) {
