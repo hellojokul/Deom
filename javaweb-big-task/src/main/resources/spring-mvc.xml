@@ -24,6 +24,8 @@
 		<property name="freemarkerSettings">
 			<props>
 				<prop key="classic_compatible">true</prop>
+				<prop key="defaultEncoding">UTF-8</prop>
+				<prop key="template_exception_handler">rethrow</prop>
 			</props>
 		</property>
 	</bean>
