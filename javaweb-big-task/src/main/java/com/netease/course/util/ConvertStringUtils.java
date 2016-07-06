@@ -39,6 +39,10 @@ public class ConvertStringUtils {
 			result += "."+nums[nums.length-2];
 			result += nums[nums.length-1];
 		}
+		String[] nums = result.split("\\.");
+		if(nums[1].equals("00")) {
+			result = nums[0];
+		}
 		return result;
 	}
 }
