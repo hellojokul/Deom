@@ -116,7 +116,6 @@ public class ProductServiceImpl implements ProductService {
 		}
 		String reallyPath = folder.getPath()+"/"+fileName;
 		String reallyUrl = fileUrl+fileName;
-		System.out.println(reallyUrl);
 		try {
 			byte[] bytes = mpf.getBytes();
 			if(!MixUtils.checkFileType(fileName, bytes)) {

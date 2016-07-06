@@ -57,7 +57,7 @@
                 </div>
             </div>
         </form>
-        <span class="imgpre"><img src="" alt="" id="imgpre"></span>
+        <span class="imgpre"><img src="${result}" alt="" id="imgpre"></span>
     </div>
 </div>
 <#include "/include/footer.ftl">

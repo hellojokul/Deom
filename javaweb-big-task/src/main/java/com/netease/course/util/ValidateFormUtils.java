@@ -37,15 +37,17 @@ public class ValidateFormUtils {
 	
 	public static boolean validImage(String image) {
 		try {
-			URL url = new URL(image);
-			URLConnection conn = url.openConnection();
-			if(conn.getContentLength()<(2<<20-1)) {
-				return true;
+			if(image.matches("[a-zA-z]+://[^\\s]*")) {
+				URL url = new URL(image);
+				URLConnection conn = url.openConnection();
+				if(conn.getContentLength()>1048576) {
+					return false;
+				}
 			}
+			return true;
 		} catch (IOException e) {
 			return false;
 		}
-		return false;
 	}
 	
 	public static boolean validForm(String price, String title, 
