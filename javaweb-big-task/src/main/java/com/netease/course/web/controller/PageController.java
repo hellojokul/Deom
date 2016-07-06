@@ -198,7 +198,7 @@ public class PageController {
 	@RequestMapping(path="/api/upload", method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> uploadFileControler(
 			@RequestParam("file") MultipartFile mpf, HttpServletRequest req) {
-		String url = productService.storePicture(mpf);
+		String url = productService.storePicture(mpf,req);
 		if(checkCookie(req,1) && url!=null) {
 			return analysisData(200, "上传成功", url);
 		} else {

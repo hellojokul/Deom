@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,8 +37,8 @@ public class ProductServiceImpl implements ProductService {
 	private AccountDao accountDao;
 	@Value("${filePath}")
 	private String folderPath;
-	@Value("${urlPath}")
-	private String relativeUrl;
+	@Value("${fileUrl}")
+	private String fileUrl;
 	
 	@Override
 	public Product showProduct(int id) {
@@ -105,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 	//保存图片到本地的image文件下并返回该图片的URL地址
 	@Override
-	public String storePicture(MultipartFile mpf) {
+	public String storePicture(MultipartFile mpf, HttpServletRequest req) {
 		String fileName = mpf.getOriginalFilename();
 		BufferedOutputStream out = null;
 		File folder = new File(System.getProperty("user.dir")+folderPath);
@@ -113,7 +115,8 @@ public class ProductServiceImpl implements ProductService {
 			folder.mkdir();
 		}
 		String reallyPath = folder.getPath()+"/"+fileName;
-		String reallyUrl = relativeUrl+fileName;
+		String reallyUrl = fileUrl+fileName;
+		System.out.println(reallyUrl);
 		try {
 			byte[] bytes = mpf.getBytes();
 			if(!MixUtils.checkFileType(fileName, bytes)) {

@@ -2,6 +2,8 @@ package com.netease.course.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.netease.course.meta.Product;
@@ -24,5 +26,5 @@ public interface ProductService {
 	
 	public void buyProduct(List<Statistics> products, User user);
 	
-	public String storePicture(MultipartFile mpf);
+	public String storePicture(MultipartFile mpf,HttpServletRequest req);
 }
