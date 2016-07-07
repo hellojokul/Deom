@@ -40,11 +40,11 @@ public class ValidateFormUtils {
 			if(image.matches("[a-zA-z]+://[^\\s]*")) {
 				URL url = new URL(image);
 				URLConnection conn = url.openConnection();
-				if(conn.getContentLength()>1048576) {
-					return false;
+				if(conn.getContentLength()<1048576) {
+					return true;
 				}
 			}
-			return true;
+			return false;
 		} catch (IOException e) {
 			return false;
 		}

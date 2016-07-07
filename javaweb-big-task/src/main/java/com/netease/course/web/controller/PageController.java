@@ -111,9 +111,11 @@ public class PageController {
 	@RequestMapping("/logout")
 	public String logoutController(HttpServletRequest req, HttpServletResponse resp) {
 		Cookie cookie = getCookie(req);
-		cookie.setMaxAge(0);
-		cookie.setPath("/");
-		resp.addCookie(cookie);
+		if(cookie!=null) {
+			cookie.setMaxAge(0);
+			cookie.setPath("/");
+			resp.addCookie(cookie);
+		}
 		return "forward:/login";
 	}
 	
@@ -176,6 +178,7 @@ public class PageController {
 	@RequestMapping(path="/api/delete", method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> deleteController(
 			@RequestParam int id, HttpServletRequest req) {
+		Cookie[] cookies = req.getCookies();
 		if(productService.deleteProduct(id) && checkCookie(req,1)) {
 			return analysisData(200, "删除成功", "1");
 		} else {
@@ -198,6 +201,7 @@ public class PageController {
 	@RequestMapping(path="/api/upload", method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> uploadFileControler(
 			@RequestParam("file") MultipartFile mpf, HttpServletRequest req) {
+		Cookie[] cookies = req.getCookies();
 		String url = productService.storePicture(mpf,req);
 		if(checkCookie(req,1) && url!=null) {
 			return analysisData(200, "上传成功", url);
