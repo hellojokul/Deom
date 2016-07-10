@@ -2,27 +2,25 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netease.course.dao.ProductDao">
-	<select id="getProducts" fetchSize="20" resultMap="resultMap">
+	<select id="getProducts" fetchSize="10" resultMap="resultMap">
 		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
-		t.price as tPrice, time, count(t.id) from content c
+		t.price as tPrice, number, time from content c
 		left join trx t on t.contentId=c.id
-		group by c.id
 	</select>
 	<select id="findProductByMaxId" resultMap="resultMap">
 		select c.id as cId,c.price as cPrice,title,icon,abstract,text 
 		from content c where id=(select max(id) from content)
 	</select>
 	<select id="findProductById" resultMap="resultMap">
-		select c.id as cId, c.price as cPrice, title, title, icon, abstract, text,
-		t.price as tPrice, time, count(t.id) from trx t
-		left join content c on c.id=t.contentId
-		where c.id=#{0} limit 0,1
+		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
+		t.price as tPrice, number, time from content c
+		left join trx t on c.id=t.contentId
+		where c.id=#{0}
 	</select>
-	<select id="getBuyProducts" fetchSize="20" resultMap="resultMap">
-		select c.id as cId, c.price as cPrice, title, title, icon, abstract, text,
-		t.price as tPrice, time, count(t.id) from trx t
+	<select id="getBuyProducts" fetchSize="10" resultMap="resultMap">
+		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
+		t.price as tPrice, number, time from trx t
 		left join content c on c.id=t.contentId
-		group by c.id
 	</select>
 
 	<resultMap type="com.netease.course.meta.Product" id="resultMap">
@@ -34,8 +32,8 @@
 		<result column="text" property="detail" typeHandler="com.netease.course.util.ByteTypeHandler" />
 		<result column="time" property="buyTime" />
 		<result column="tPrice" property="buyPrice" typeHandler="com.netease.course.util.StringTypeHandler" />
-		<result column="count(t.id)" property="buyNum" />
-		<result column="count(t.id)" property="saleNum" />
+		<result column="number" property="buyNum" />
+		<result column="number" property="saleNum" />
 		<result column="time" property="isBuy" />
 		<result column="time" property="isSell" />
 	</resultMap>
@@ -49,6 +47,17 @@
 		update content set price=#{0,typeHandler=com.netease.course.util.StringTypeHandler},
 		title=#{1},icon=#{2},abstract=#{3},text=#{4} WHERE id=#{5}
 	</update>
+
+	<select id="getProductByIds" resultType="com.netease.course.meta.Product">
+		select id,price from content
+		<if test="productIds != null">
+		<where>
+			<foreach item="id" collection="productIds">
+				or id=#{id}
+			</foreach>
+		</where>
+		</if>
+	</select>
 </mapper>
 
 

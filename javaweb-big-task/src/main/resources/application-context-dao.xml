@@ -12,7 +12,7 @@
     http://mybatis.org/schema/mybatis-spring.xsd">
 
 	<mybatis:scan base-package="com.netease.course.dao"/>
-	
+
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
     	<property name="dataSource" ref="dataSource" />
     	<property name="mapperLocations" value="classpath:*Dao.xml" />
@@ -25,25 +25,25 @@
 		<property name="password" value="${jdbc.password}" />
 
 		<property name="initialSize">
-			<value type="int">${dbcp.initialSize}</value>
+			<value type="int">1</value>
 		</property>
 		<property name="maxIdle">
-			<value type="int">${dbcp.maxIdle}</value>
+			<value type="int">5</value>
 		</property>
 		<property name="minIdle">
-			<value type="int">${dbcp.minIdle}</value>
+			<value type="int">5</value>
 		</property>
 		<property name="maxOpenPreparedStatements">
-			<value type="int">${dbcp.maxOpenPreparedStatements}</value>
+			<value type="int">10</value>
 		</property>
 		<property name="maxWait">
-			<value type="int">${dbcp.maxWait}</value>
+			<value type="int">10</value>
 		</property>
 		<property name="testWhileIdle">
-			<value type="boolean">${dbcp.testWhileIdle}</value>
+			<value type="boolean">true</value>
 		</property>
 		<property name="minEvictableIdleTimeMillis">
-			<value type="long">${dbcp.minEvictableIdleTimeMillis}</value>
+			<value type="long">3600000</value>
 		</property>
 	</bean>
 </beans>

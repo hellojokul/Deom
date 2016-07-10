@@ -1,6 +1,7 @@
 package com.netease.course.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
@@ -17,10 +18,12 @@ public interface ProductDao {
 	
 	public List<Product> getBuyProducts();
 	
-	@Select("SELECT count(id) FROM content")
+	public List<Product> getProductByIds(Map<String, List<Integer>> map);
+	
+	@Select("select count(id) from content")
 	public String productTotal();
 	
-	@Delete("DELETE FROM content WHERE id=#{0}")
+	@Delete("delete from content where id=#{0}")
 	public void deleteProductById(int id);
 	
 	public void updateProduct(String price,String title,String image,String summary,String detail,int id);

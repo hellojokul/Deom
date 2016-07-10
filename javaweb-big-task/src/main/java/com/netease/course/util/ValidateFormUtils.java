@@ -7,8 +7,8 @@ import java.net.URLConnection;
 public class ValidateFormUtils {
 	
 	public static boolean validPrice(String price) {
-		int e = price.indexOf("E");
-		if(e>0 || price.charAt(0)=='-') {
+		String[] nums = price.split("\\.");
+		if(nums[0].length()>7) {
 			return false;
 		}
 		return true;

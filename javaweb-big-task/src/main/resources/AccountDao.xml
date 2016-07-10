@@ -3,11 +3,12 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netease.course.dao.AccountDao">
 	<insert id="addRecord" useGeneratedKeys="true">
-		insert into trx(contentId,personId,price,time) values
+		insert into trx(contentId,personId,price,number,time) values
 		<foreach item="account" collection="accountList" separator=",">
 			(#{account.contentId},
 			#{account.personId},
-			#{account.price,typeHandler=com.netease.course.util.StringTypeHandler},
+			#{account.price},
+			#{account.number},
 			#{account.time})
 		</foreach>
 	</insert>

@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +40,8 @@ public class ProductServiceImpl implements ProductService {
 	@Value("${fileUrl}")
 	private String fileUrl;
 	
+	private final String SUCCESS = "success";
+	
 	@Override
 	public Product showProduct(int id) {
 		Product product = productDao.findProductById(id);
@@ -50,13 +52,45 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getProducts() {
 		return productDao.getProducts();
 	}
-	@Override
-	public List<Product> getAccountProducts() {
-		return productDao.getBuyProducts();
-	}
 
 	@Override
-	public Product addFindProduct(String price,String title,String image,String summary,String detail) {
+	public List<Product> checkAccountProducts(String type, HttpSession session) {
+		return productDao.getBuyProducts();
+	}
+	
+	@Override
+	public String checkBuyProduct(List<Statistics> statis, User user, String type, HttpSession session) {
+		Map<String,List<Integer>> productMap = new HashMap<String,List<Integer>>();
+		Map<String,List<Account>> accountMap = new HashMap<String,List<Account>>();
+		List<Integer> ids = new ArrayList<Integer>();
+		List<Integer> numbers = new ArrayList<Integer>();
+		
+		Iterator<Statistics> iter = statis.iterator();
+		while(iter.hasNext()) {
+			Statistics s = iter.next();
+			ids.add(s.getId());
+			numbers.add(s.getNumber());
+		}
+		productMap.put("productIds", ids);
+		List<Product> products = productDao.getProductByIds(productMap);
+		if(numbers.size()==products.size()) {
+			List<Account> accountList = new ArrayList<Account>();
+			for(int i=0; i<products.size(); i++) {
+				Product p = products.get(i);
+				int number = numbers.get(i);
+				Account account = new Account(p.getId(),user.getId(),p.getPrice(),number,System.currentTimeMillis());
+				accountList.add(account);
+			}
+			accountMap.put("accountList", accountList);
+			accountDao.addRecord(accountMap);
+			return SUCCESS;
+		}
+		return null;
+	}
+	
+	
+	@Override
+	public Product checkAddProduct(String price,String title,String image,String summary,String detail,String type, HttpSession session) {
 		int total = Integer.valueOf(productDao.productTotal());
 		if(total<1000 && ValidateFormUtils.validForm(price, title, image, summary, detail)) {
 			productDao.addProduct(price, title, image, summary, detail);
@@ -66,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product updateProduct(String price,String title,String image,String summary,String detail,int id) {
+	public Product checkUpdateProduct(String price,String title,String image,String summary,String detail,int id,String type, HttpSession session) {
 		if(ValidateFormUtils.validForm(price, title, image, summary, detail)) {
 			productDao.updateProduct(price, title, image, summary, detail, id);
 			return productDao.findProductById(id);
@@ -75,40 +109,21 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public boolean deleteProduct(int id) {
+	public String checkDeleteProduct(int id, String type, HttpSession session) {
 		Product product = showProduct(id);
-		if(product==null || product.getIsBuy()){
-			return false;
-		} else {
+		if(product!=null && !product.getIsBuy()){
 			productDao.deleteProductById(id);
-			return true;
+			return SUCCESS;
+		} else {
+			return null;
 		}
 	}
-	
-	@Override
-	public void buyProduct(List<Statistics> statis, User user) {
-		Map<String,List<Account>> map = new HashMap<String,List<Account>>();
-		Iterator<Statistics> iter = statis.iterator();
-		while(iter.hasNext()) {
-			Statistics st = iter.next();
-			Product p = productDao.findProductById(st.getId());
-			int number = st.getNumber();
-			if(p.getPrice()!=null && !p.getIsBuy() && number>0) {
-				List<Account> accountList = new ArrayList<Account>();
-				Account account = new Account(p.getId(),user.getId(),p.getPrice(),System.currentTimeMillis());
-				for(int i=0; i<number; i++) {
-					accountList.add(account);
-				}
-				map.put("accountList", accountList);
-				accountDao.addRecord(map);
-				map.clear();
-			}
-		}
-	}
+
 	//保存图片到本地的image文件下并返回该图片的URL地址
 	@Override
-	public String storePicture(MultipartFile mpf, HttpServletRequest req) {
-		String fileName = mpf.getOriginalFilename();
+	public String checkStorePicture(MultipartFile mpf, String type, HttpSession session) {
+		String suffixName = mpf.getOriginalFilename().split("\\.")[1];
+		String fileName = System.currentTimeMillis()+"."+suffixName;
 		BufferedOutputStream out = null;
 		File folder = new File(System.getProperty("user.dir")+folderPath);
 		if(!folder.isDirectory()) {
@@ -118,7 +133,7 @@ public class ProductServiceImpl implements ProductService {
 		String reallyUrl = fileUrl+fileName;
 		try {
 			byte[] bytes = mpf.getBytes();
-			if(!MixUtils.checkFileType(fileName, bytes)) {
+			if(!MixUtils.checkFileType(suffixName, bytes)) {
 				return null;
 			}
 			out = new BufferedOutputStream(
@@ -126,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
 			out.flush();
 			out.write(bytes);
 		} catch (IOException e) {
-			//
+			//ignore
 		} finally {
 			try {
 				if(out!=null) {

@@ -2,7 +2,7 @@ package com.netease.course.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,17 +14,17 @@ public interface ProductService {
 	
 	public List<Product> getProducts();
 	
-	public List<Product> getAccountProducts();
-	
 	public Product showProduct(int id);
 	
-	public Product addFindProduct(String price,String title,String image,String summary,String detail);
+	public List<Product> checkAccountProducts(String type, HttpSession session);
 	
-	public boolean deleteProduct(int id);
+	public String checkBuyProduct(List<Statistics> products, User user, String type, HttpSession session);
 	
-	public Product updateProduct(String price,String title,String image,String summary,String detail,int id);
+	public Product checkAddProduct(String price,String title,String image,String summary,String detail, String type, HttpSession session);
 	
-	public void buyProduct(List<Statistics> products, User user);
+	public Product checkUpdateProduct(String price,String title,String image,String summary,String detail,int id, String type, HttpSession session);
 	
-	public String storePicture(MultipartFile mpf,HttpServletRequest req);
+	public String checkDeleteProduct(int id, String type, HttpSession session);
+	
+	public String checkStorePicture(MultipartFile mpf, String type, HttpSession session);
 }
