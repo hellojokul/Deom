@@ -2,9 +2,7 @@ package com.netease.course.util;
 
 import java.security.MessageDigest;
 
-import sun.misc.BASE64Encoder;
 
-@SuppressWarnings("restriction")
 public class MixUtils {
 	
 	public static boolean checkFileType(String fileType, byte[] bytes) {
@@ -16,16 +14,5 @@ public class MixUtils {
 			return true;
 		}
 		return false;
-	}
-	
-	public static String getMD5(String value) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("md5");
-			byte[] bytes = md.digest(value.getBytes());
-			BASE64Encoder base = new BASE64Encoder();
-			return base.encode(bytes);
-		} catch (Exception e) {
-			return null;
-		}
 	}
 }
