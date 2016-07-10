@@ -1,8 +1,5 @@
 package com.netease.course.util;
 
-import java.security.MessageDigest;
-
-
 public class MixUtils {
 	
 	public static boolean checkFileType(String fileType, byte[] bytes) {
