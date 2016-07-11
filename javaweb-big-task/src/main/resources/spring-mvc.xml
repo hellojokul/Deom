@@ -13,6 +13,23 @@
 	<context:component-scan base-package="com.netease.course.web.controller" />
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/editSubmit"/>
+			<mvc:mapping path="/publicSubmit"/>
+			<mvc:mapping path="/edit"/>
+			<mvc:mapping path="/public"/>
+			<mvc:mapping path="/api/delete"/>
+			<mvc:mapping path="/api/upload"/>
+			<bean class="com.netease.course.web.interceptor.SellerInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/account"/>
+			<mvc:mapping path="/api/buy"/>
+			<mvc:mapping path="/settleAccount"/>
+			<bean class="com.netease.course.web.interceptor.BuyerInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
 	
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="1048576"/>

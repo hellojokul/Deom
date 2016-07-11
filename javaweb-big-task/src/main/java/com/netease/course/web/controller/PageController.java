@@ -37,8 +37,6 @@ public class PageController {
 	@Autowired
 	private UserService userService;
 	
-	private final String BUYER = "buyer";
-	private final String SELLER = "seller";
 	//调用RequestMapping前进行判断并封装数据
 	@ModelAttribute
 	public void userModel(Model model, HttpServletRequest req, HttpServletResponse resp) {
@@ -108,9 +106,14 @@ public class PageController {
 		return "public";
 	}
 	
+	@RequestMapping("/error")
+	public String errorController() {
+		return "login";
+	}
+	
 	@RequestMapping("/account")
 	public ModelMap accoundController(ModelMap map, HttpSession session) {
-		List<Product> buyList = productService.checkAccountProducts(BUYER,session);
+		List<Product> buyList = productService.accountProducts();
 		map.addAttribute("buyList", buyList);
 		return map;
 	}
@@ -120,7 +123,7 @@ public class PageController {
 			@RequestParam String price, @RequestParam String title,
 			@RequestParam String image, @RequestParam String summary,
 			@RequestParam String detail, @RequestParam int id, HttpSession session) {
-		Product product = productService.checkUpdateProduct(price, title, image, summary, detail, id, SELLER, session);
+		Product product = productService.updateProduct(price, title, image, summary, detail, id);
 		map.addAttribute("product", product);
 		return map;
 	}
@@ -129,7 +132,7 @@ public class PageController {
 			@RequestParam String price, @RequestParam String title,
 			@RequestParam String summary, @RequestParam String image,
 			@RequestParam String detail, HttpSession session) {
-		Product product = productService.checkAddProduct(price, title, image,summary, detail, SELLER, session);
+		Product product = productService.addProduct(price, title, image,summary, detail);
 		map.addAttribute("product", product);
 		return map;
 	}
@@ -156,7 +159,7 @@ public class PageController {
 			RequestEntity<List<Statistics>> RequestEntiry, HttpSession session, 
 			HttpServletRequest req, HttpServletResponse resp) {
 		List<Statistics> statis = RequestEntiry.getBody();
-		String status = productService.checkBuyProduct(statis, (User)session.getAttribute("user"), BUYER, session);
+		String status = productService.buyProduct(statis, (User)session.getAttribute("user"));
 		if(status!=null) {
 			return analysisEntity(200, "购买成功", "1");
 		} else {
@@ -169,7 +172,7 @@ public class PageController {
 	@RequestMapping(path="/api/delete", method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> deleteController(
 			@RequestParam int id, HttpSession session) {
-		if(productService.checkDeleteProduct(id,SELLER,session)!=null) {
+		if(productService.deleteProduct(id)!=null) {
 			return analysisEntity(200, "删除成功", "1");
 		} else {
 			return analysisEntity(400, "删除失败", "0");
@@ -179,7 +182,7 @@ public class PageController {
 	@RequestMapping(path="/api/upload", method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> uploadFileControler(
 			@RequestParam("file") MultipartFile mpf, HttpSession session) {
-		String url = productService.checkStorePicture(mpf,SELLER,session);
+		String url = productService.storePicture(mpf);
 		if(url!=null) {
 			return analysisEntity(200, "上传成功", url);
 		} else {

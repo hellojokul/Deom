@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -54,12 +52,12 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<Product> checkAccountProducts(String type, HttpSession session) {
+	public List<Product> accountProducts() {
 		return productDao.getBuyProducts();
 	}
 	
 	@Override
-	public String checkBuyProduct(List<Statistics> statis, User user, String type, HttpSession session) {
+	public String buyProduct(List<Statistics> statis, User user) {
 		Map<String,List<Integer>> productMap = new HashMap<String,List<Integer>>();
 		Map<String,List<Account>> accountMap = new HashMap<String,List<Account>>();
 		List<Integer> ids = new ArrayList<Integer>();
@@ -90,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
 	
 	
 	@Override
-	public Product checkAddProduct(String price,String title,String image,String summary,String detail,String type, HttpSession session) {
+	public Product addProduct(String price,String title,String image,String summary,String detail) {
 		int total = Integer.valueOf(productDao.productTotal());
 		if(total<1000 && ValidateFormUtils.validForm(price, title, image, summary, detail)) {
 			productDao.addProduct(price, title, image, summary, detail);
@@ -100,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product checkUpdateProduct(String price,String title,String image,String summary,String detail,int id,String type, HttpSession session) {
+	public Product updateProduct(String price,String title,String image,String summary,String detail,int id) {
 		if(ValidateFormUtils.validForm(price, title, image, summary, detail)) {
 			productDao.updateProduct(price, title, image, summary, detail, id);
 			return productDao.findProductById(id);
@@ -109,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public String checkDeleteProduct(int id, String type, HttpSession session) {
+	public String deleteProduct(int id) {
 		Product product = showProduct(id);
 		if(product!=null && !product.getIsBuy()){
 			productDao.deleteProductById(id);
@@ -121,7 +119,7 @@ public class ProductServiceImpl implements ProductService {
 
 	//保存图片到本地的image文件下并返回该图片的URL地址
 	@Override
-	public String checkStorePicture(MultipartFile mpf, String type, HttpSession session) {
+	public String storePicture(MultipartFile mpf) {
 		String suffixName = mpf.getOriginalFilename().split("\\.")[1];
 		String fileName = System.currentTimeMillis()+"."+suffixName;
 		BufferedOutputStream out = null;
