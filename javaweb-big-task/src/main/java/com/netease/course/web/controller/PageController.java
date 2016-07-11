@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -155,16 +154,14 @@ public class PageController {
 	}
 
 	@RequestMapping(path="/api/buy", method=RequestMethod.POST)
-	public ResponseEntity<Map<String,Object>> buyerControler(
-			RequestEntity<List<Statistics>> RequestEntiry, HttpSession session, 
-			HttpServletRequest req, HttpServletResponse resp) {
+	public ResponseEntity<Map<String,Object>> buyerControler(RequestEntity<List<Statistics>> RequestEntiry, 
+			HttpSession session, HttpServletResponse resp) {
 		List<Statistics> statis = RequestEntiry.getBody();
 		String status = productService.buyProduct(statis, (User)session.getAttribute("user"));
 		if(status!=null) {
 			return analysisEntity(200, "购买成功", "1");
 		} else {
-			Cookie cookie = CookieUtils.createCookie("products", "/", 0, "");
-			resp.addCookie(cookie);
+			resp.addCookie(CookieUtils.createCookie("products", "/", 0, ""));
 			return analysisEntity(400, "购买失败", "0");
 		}
 	}

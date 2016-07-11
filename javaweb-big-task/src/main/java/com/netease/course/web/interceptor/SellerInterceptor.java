@@ -14,7 +14,7 @@ public class SellerInterceptor extends HandlerInterceptorAdapter{
 			HttpServletResponse response, Object handler) throws Exception {
 		User user = (User)request.getSession().getAttribute("user");
 		if(user!=null && user.getNickName().equals("seller")) {
-			return true;
+			return super.preHandle(request, response, handler);
 		}
 		request.getRequestDispatcher("/login").forward(request, response);
 		return false;

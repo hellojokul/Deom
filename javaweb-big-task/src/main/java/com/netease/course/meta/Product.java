@@ -10,8 +10,8 @@ public class Product {
 	private String detail;
 	private long buyTime;
 	private String buyPrice;
-	private Integer buyNum;
-	private Integer saleNum;
+	private int buyNum;
+	private int saleNum;
 
 	private boolean isBuy;
 	private boolean isSell;
@@ -79,16 +79,16 @@ public class Product {
 		this.buyPrice = buyPrice;
 	}
 	
-	public Integer getBuyNum() {
+	public int getBuyNum() {
 		return buyNum;
 	}
-	public void setBuyNum(Integer buyNum) {
+	public void setBuyNum(int buyNum) {
 		this.buyNum = buyNum;
 	}
-	public Integer getSaleNum() {
+	public int getSaleNum() {
 		return saleNum;
 	}
-	public void setSaleNum(Integer saleNum) {
+	public void setSaleNum(int saleNum) {
 		this.saleNum = saleNum;
 	}
 }
