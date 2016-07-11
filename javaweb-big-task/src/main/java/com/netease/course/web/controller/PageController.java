@@ -1,6 +1,5 @@
 package com.netease.course.web.controller;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class PageController {
 	
 	//调用RequestMapping前进行判断并封装数据
 	@ModelAttribute
-	public void userModel(Model model, HttpServletRequest req, HttpServletResponse resp) {
+	public void userModel(Model model, HttpServletRequest req) {
 		Map<String, Object> reqParameters = new HashMap<String, Object>();
 		User user = (User)req.getSession().getAttribute("user");
 		if(user!=null) {
@@ -46,8 +45,9 @@ public class PageController {
 		}
 		String type = req.getParameter("type");
 		String id = req.getParameter("id");
-		
-		reqParameters.put("id", id);
+		if(id!=null) {
+			reqParameters.put("id", id);
+		}
 		if(type!=null && type.equals("1")) {
 			reqParameters.put("type", 1);
 		} else {
@@ -59,7 +59,7 @@ public class PageController {
 	 * Synchronous Method
 	 * */
 	@RequestMapping("/")
-	public String indexController(ModelMap root, HttpServletRequest req) {
+	public String indexController(ModelMap root) {
 		List<Product> productList = productService.getProducts();
 		root.addAttribute("productList", productList);
 		return "index";
@@ -89,13 +89,9 @@ public class PageController {
 	}
 
 	@RequestMapping("/edit")
-	public ModelMap editController(ModelMap map, HttpServletRequest req) {
-		Enumeration<String> names = req.getParameterNames();
-		while(names.hasMoreElements()) {
-			if(names.nextElement().equals("id")) {
-				int id = Integer.valueOf(req.getParameter("id"));
-				map.addAttribute("product", productService.showProduct(id));
-			}
+	public ModelMap editController(ModelMap map, @RequestParam String id) {
+		if(id!=null) {
+			map.addAttribute("product", productService.showProduct(Integer.valueOf(id)));
 		}
 		return map;
 	}
@@ -111,7 +107,7 @@ public class PageController {
 	}
 	
 	@RequestMapping("/account")
-	public ModelMap accoundController(ModelMap map, HttpSession session) {
+	public ModelMap accoundController(ModelMap map) {
 		List<Product> buyList = productService.accountProducts();
 		map.addAttribute("buyList", buyList);
 		return map;
@@ -121,7 +117,7 @@ public class PageController {
 	public ModelMap editSubmitController(ModelMap map,
 			@RequestParam String price, @RequestParam String title,
 			@RequestParam String image, @RequestParam String summary,
-			@RequestParam String detail, @RequestParam int id, HttpSession session) {
+			@RequestParam String detail, @RequestParam int id) {
 		Product product = productService.updateProduct(price, title, image, summary, detail, id);
 		map.addAttribute("product", product);
 		return map;
@@ -130,7 +126,7 @@ public class PageController {
 	public ModelMap publicSubmitController(ModelMap map,
 			@RequestParam String price, @RequestParam String title,
 			@RequestParam String summary, @RequestParam String image,
-			@RequestParam String detail, HttpSession session) {
+			@RequestParam String detail) {
 		Product product = productService.addProduct(price, title, image,summary, detail);
 		map.addAttribute("product", product);
 		return map;
@@ -139,9 +135,7 @@ public class PageController {
 	 * Asynchronous Method
 	 * */
 	@RequestMapping(path="/api/login",method=RequestMethod.POST)
-	public ResponseEntity<Map<String,Object>> userController(
-			HttpSession session,
-			HttpServletResponse resp,
+	public ResponseEntity<Map<String,Object>> userController(HttpSession session,
 			@RequestParam String userName,
 			@RequestParam String password) {
 		User loginUser = userService.getUser(userName, password);
@@ -167,8 +161,7 @@ public class PageController {
 	}
 
 	@RequestMapping(path="/api/delete", method=RequestMethod.POST)
-	public ResponseEntity<Map<String,Object>> deleteController(
-			@RequestParam int id, HttpSession session) {
+	public ResponseEntity<Map<String,Object>> deleteController(@RequestParam int id) {
 		if(productService.deleteProduct(id)!=null) {
 			return analysisEntity(200, "删除成功", "1");
 		} else {
@@ -177,8 +170,7 @@ public class PageController {
 	}
 
 	@RequestMapping(path="/api/upload", method=RequestMethod.POST)
-	public ResponseEntity<Map<String,Object>> uploadFileControler(
-			@RequestParam("file") MultipartFile mpf, HttpSession session) {
+	public ResponseEntity<Map<String,Object>> uploadFileControler(@RequestParam("file") MultipartFile mpf) {
 		String url = productService.storePicture(mpf);
 		if(url!=null) {
 			return analysisEntity(200, "上传成功", url);
