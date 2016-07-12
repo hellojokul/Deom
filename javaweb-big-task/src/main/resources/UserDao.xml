@@ -5,8 +5,4 @@
 	<select id="getUser" resultType="com.netease.course.meta.User">
 		select id,userName,password,nickName,userType from person where userName=#{0} and password=#{1} 
 	</select>
-	
-	<select id="getUserByType" resultType="com.netease.course.meta.User">
-		select id,userName,nickName,userType from person where nickName=#{0}
-	</select>
 </mapper>

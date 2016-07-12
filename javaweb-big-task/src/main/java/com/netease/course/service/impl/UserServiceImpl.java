@@ -20,9 +20,4 @@ public class UserServiceImpl implements UserService {
 		}
 		return user;
 	}
-
-	@Override
-	public User getUser(String nickName) {
-		return userDao.getUserByType(nickName);
-	}
 }

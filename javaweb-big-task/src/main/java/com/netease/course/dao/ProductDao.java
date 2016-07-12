@@ -12,7 +12,7 @@ public interface ProductDao {
 	
 	public List<Product> getProducts();
 	
-	public Product findProductByMaxId();
+	public Product findNewProduct();
 	
 	public Product findProductById(int id);
 	

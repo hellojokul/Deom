@@ -39,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
 	private String fileUrl;
 	
 	private final String SUCCESS = "success";
-	
+
 	@Override
 	public Product showProduct(int id) {
 		Product product = productDao.findProductById(id);
@@ -86,13 +86,12 @@ public class ProductServiceImpl implements ProductService {
 		return null;
 	}
 	
-	
 	@Override
 	public Product addProduct(String price,String title,String image,String summary,String detail) {
 		int total = Integer.valueOf(productDao.productTotal());
 		if(total<1000 && ValidateFormUtils.validForm(price, title, image, summary, detail)) {
 			productDao.addProduct(price, title, image, summary, detail);
-			return productDao.findProductByMaxId();
+			return productDao.findNewProduct();
 		}
 		return null;
 	}

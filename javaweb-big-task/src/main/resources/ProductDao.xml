@@ -7,9 +7,9 @@
 		t.price as tPrice, number, time from content c
 		left join trx t on t.contentId=c.id
 	</select>
-	<select id="findProductByMaxId" resultMap="resultMap">
-		select c.id as cId,c.price as cPrice,title,icon,abstract,text 
-		from content c where id=(select max(id) from content)
+	<select id="findNewProduct" resultMap="resultMap">
+		select id,price,title,icon,abstract,text 
+		from content c where id=@@identity
 	</select>
 	<select id="findProductById" resultMap="resultMap">
 		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
