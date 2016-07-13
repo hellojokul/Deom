@@ -16,6 +16,16 @@ public class Product {
 	private boolean isBuy;
 	private boolean isSell;
 	
+	public Product() {}
+	public Product(String price, String title, String image, String summary,
+			String detail) {
+		this.price = price;
+		this.title = title;
+		this.image = image;
+		this.summary = summary;
+		this.detail = detail;
+	}
+
 	public boolean getIsBuy() {
 		return isBuy;
 	}

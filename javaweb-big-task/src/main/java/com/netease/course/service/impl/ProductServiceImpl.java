@@ -58,39 +58,34 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Override
 	public String buyProduct(List<Statistics> statis, User user) {
-		Map<String,List<Integer>> productMap = new HashMap<String,List<Integer>>();
+		String flag = null;
 		Map<String,List<Account>> accountMap = new HashMap<String,List<Account>>();
-		List<Integer> ids = new ArrayList<Integer>();
-		List<Integer> numbers = new ArrayList<Integer>();
-		
 		Iterator<Statistics> iter = statis.iterator();
 		while(iter.hasNext()) {
-			Statistics s = iter.next();
-			ids.add(s.getId());
-			numbers.add(s.getNumber());
-		}
-		productMap.put("productIds", ids);
-		List<Product> products = productDao.getProductByIds(productMap);
-		if(numbers.size()==products.size()) {
-			List<Account> accountList = new ArrayList<Account>();
-			for(int i=0; i<products.size(); i++) {
-				Product p = products.get(i);
-				int number = numbers.get(i);
-				Account account = new Account(p.getId(),user.getId(),p.getPrice(),number,System.currentTimeMillis());
-				accountList.add(account);
+			Statistics st = iter.next();
+			Product p = showProduct(st.getId());
+			int number = st.getNumber()+1;
+			if(p!=null && p.getPrice()!=null && number>0) {
+				List<Account> accountList = new ArrayList<Account>();
+				Account account = new Account(p.getId(),user.getId(),p.getPrice(),System.currentTimeMillis());
+				for(int i=0; i<number; i++) {
+					accountList.add(account);
+				}
+				accountMap.put("accountList", accountList);
+				if(!accountMap.isEmpty() && accountDao.addRecord(accountMap)) {
+					flag = SUCCESS;
+				}
+				accountMap.clear();
 			}
-			accountMap.put("accountList", accountList);
-			accountDao.addRecord(accountMap);
-			return SUCCESS;
 		}
-		return null;
+		return flag;
 	}
 	
 	@Override
 	public Product addProduct(String price,String title,String image,String summary,String detail) {
 		int total = Integer.valueOf(productDao.productTotal());
-		if(total<1000 && ValidateFormUtils.validForm(price, title, image, summary, detail)) {
-			productDao.addProduct(price, title, image, summary, detail);
+		if(total<1000 && ValidateFormUtils.validForm(price,title,image,summary,detail) 
+				&& productDao.addProduct(price,title,image,summary,detail)) {
 			return productDao.findNewProduct();
 		}
 		return null;
@@ -99,8 +94,11 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Product updateProduct(String price,String title,String image,String summary,String detail,int id) {
 		if(ValidateFormUtils.validForm(price, title, image, summary, detail)) {
-			productDao.updateProduct(price, title, image, summary, detail, id);
-			return productDao.findProductById(id);
+			Product origin = showProduct(id);
+			if(productDao.updateProduct(price, title, image, summary, detail, id)) {
+				delImage(origin);
+				return showProduct(id);
+			}
 		}
 		return null;
 	}
@@ -108,8 +106,8 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public String deleteProduct(int id) {
 		Product product = showProduct(id);
-		if(product!=null && !product.getIsBuy()){
-			productDao.deleteProductById(id);
+		if(product!=null && !product.getIsBuy() && productDao.deleteProductById(id)){
+			delImage(product);
 			return SUCCESS;
 		} else {
 			return null;
@@ -149,6 +147,16 @@ public class ProductServiceImpl implements ProductService {
 			}
 		}
 		return reallyUrl;
+	}
+	
+	private void delImage(Product product) {
+		if(product!=null) {
+			String[] urls = product.getImage().split("/");
+			File file = new File(System.getProperty("user.dir")+folderPath+urls[urls.length-1]);
+			if(file.exists()) {
+				file.delete();
+			}
+		}
 	}
 }
 

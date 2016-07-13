@@ -3,24 +3,26 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.netease.course.dao.ProductDao">
 	<select id="getProducts" fetchSize="10" resultMap="resultMap">
-		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
-		t.price as tPrice, number, time from content c
-		left join trx t on t.contentId=c.id
+		select c.id as cId, c.price as cPrice, title, icon, abstract, text, t.price as tPrice, 
+		case count(t.id)-1 when -1 then 0 else count(t.id)-1 end as number,
+		time from content c left join trx t on t.contentId=c.id
+		group by c.id
 	</select>
 	<select id="findNewProduct" resultMap="resultMap">
 		select id,price,title,icon,abstract,text 
 		from content c where id=@@identity
 	</select>
 	<select id="findProductById" resultMap="resultMap">
-		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
-		t.price as tPrice, number, time from content c
-		left join trx t on c.id=t.contentId
-		where c.id=#{0}
+		select c.id as cId, c.price as cPrice, title, title, icon, abstract, text,
+		case count(t.id)-1 when -1 then 0 else count(t.id)-1 end as number, 
+		t.price as tPrice, time from trx t left join content c on c.id=t.contentId
+		where c.id=#{0} limit 0,1
 	</select>
 	<select id="getBuyProducts" fetchSize="10" resultMap="resultMap">
 		select c.id as cId, c.price as cPrice, title, icon, abstract, text,
-		t.price as tPrice, number, time from trx t
-		left join content c on c.id=t.contentId
+		case count(t.id)-1 when -1 then 0 else count(t.id)-1 end as number,
+		t.price as tPrice, time from trx t left join content c on c.id=t.contentId
+		group by c.id
 	</select>
 
 	<resultMap type="com.netease.course.meta.Product" id="resultMap">
@@ -47,17 +49,6 @@
 		update content set price=#{0,typeHandler=com.netease.course.util.StringTypeHandler},
 		title=#{1},icon=#{2},abstract=#{3},text=#{4} WHERE id=#{5}
 	</update>
-
-	<select id="getProductByIds" resultType="com.netease.course.meta.Product">
-		select id,price from content
-		<if test="productIds != null">
-		<where>
-			<foreach item="id" collection="productIds">
-				or id=#{id}
-			</foreach>
-		</where>
-		</if>
-	</select>
 </mapper>
 
 

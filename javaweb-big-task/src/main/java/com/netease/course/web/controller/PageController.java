@@ -66,8 +66,11 @@ public class PageController {
 	}
 	
 	@RequestMapping("/show")
-	public ModelMap showController(ModelMap map, @RequestParam int id) {
-		map.addAttribute("product", productService.showProduct(id));
+	public ModelMap showController(ModelMap map, HttpServletRequest req) {
+		Integer id = getId(req);
+		if(id!=null) {
+			map.addAttribute("product", productService.showProduct(id));
+		}
 		return map;
 	}
 
@@ -89,9 +92,10 @@ public class PageController {
 	}
 
 	@RequestMapping("/edit")
-	public ModelMap editController(ModelMap map, @RequestParam String id) {
+	public ModelMap editController(ModelMap map, HttpServletRequest req) {
+		Integer id = getId(req);
 		if(id!=null) {
-			map.addAttribute("product", productService.showProduct(Integer.valueOf(id)));
+			map.addAttribute("product", productService.showProduct(id));
 		}
 		return map;
 	}
@@ -127,7 +131,7 @@ public class PageController {
 			@RequestParam String price, @RequestParam String title,
 			@RequestParam String summary, @RequestParam String image,
 			@RequestParam String detail) {
-		Product product = productService.addProduct(price, title, image,summary, detail);
+		Product product = productService.addProduct(price,title,image,summary,detail);
 		map.addAttribute("product", product);
 		return map;
 	}
@@ -152,7 +156,7 @@ public class PageController {
 			HttpSession session, HttpServletResponse resp) {
 		List<Statistics> statis = RequestEntiry.getBody();
 		String status = productService.buyProduct(statis, (User)session.getAttribute("user"));
-		if(status!=null) {
+		if(!statis.isEmpty() && status!=null) {
 			return analysisEntity(200, "购买成功", "1");
 		} else {
 			resp.addCookie(CookieUtils.createCookie("products", "/", 0, ""));
@@ -161,8 +165,9 @@ public class PageController {
 	}
 
 	@RequestMapping(path="/api/delete", method=RequestMethod.POST)
-	public ResponseEntity<Map<String,Object>> deleteController(@RequestParam int id) {
-		if(productService.deleteProduct(id)!=null) {
+	public ResponseEntity<Map<String,Object>> deleteController(HttpServletRequest req) {
+		Integer id = getId(req);
+		if(id!=null && productService.deleteProduct(id)!=null) {
 			return analysisEntity(200, "删除成功", "1");
 		} else {
 			return analysisEntity(400, "删除失败", "0");
@@ -170,7 +175,8 @@ public class PageController {
 	}
 
 	@RequestMapping(path="/api/upload", method=RequestMethod.POST)
-	public ResponseEntity<Map<String,Object>> uploadFileControler(@RequestParam("file") MultipartFile mpf) {
+	public ResponseEntity<Map<String,Object>> uploadFileControler(
+			@RequestParam("file") MultipartFile mpf) {
 		String url = productService.storePicture(mpf);
 		if(url!=null) {
 			return analysisEntity(200, "上传成功", url);
@@ -196,6 +202,14 @@ public class PageController {
 			jsonMap.put("result", result);
 			return new ResponseEntity<Map<String,Object>>(jsonMap,HttpStatus.OK);
 		}
+	}
+	
+	private Integer getId(HttpServletRequest req) {
+		String id = req.getParameter("id");
+		if(id!=null) {
+			return Integer.valueOf(id);
+		}
+		return null;
 	}
 }
 

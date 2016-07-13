@@ -8,5 +8,5 @@ import com.netease.course.meta.Account;
 
 public interface AccountDao {
 	
-	public void addRecord(Map<String,List<Account>> map);
+	public boolean addRecord(Map<String,List<Account>> map);
 }
